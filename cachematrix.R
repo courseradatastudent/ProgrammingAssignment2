@@ -73,22 +73,29 @@ cacheSolve <- function(x, ...) {
         # Fetch the current value of the inverse matrix from cache
         matrix_inverse <- x$get_inverse()
         
-        # Check if the inverse matrix is empty in cache. If not, return 
-        # it as the inverse matrix.
-        if(nrow(matrix_inverse) == 1 & ncol(matrix_inverse) == 1 & !is.na(matrix_inverse)) {
+        # Check if the inverse matrix is empty in cache.
+        if(nrow(matrix_inverse) == 1 & ncol(matrix_inverse) == 1 & is.na(matrix_inverse)) {
+
+                # If empty, fetch the new values of the invertible matrix from cache.
+                matrix <- x$get()
+                
+                # Calculate the new inverse of the matrix.
+                matrix_inverse <- solve(matrix, ...)
+                
+                # Update the cache with the newly computed inverse matrix.
+                x$set_inverse(matrix_inverse)
+                
+                # Return the values of the newly computed inverse matrix
+                return(matrix_inverse)
+                
+        } else {
+                
+                # If the inverse matrix in cache contains non-NA values, fetch the inverse matrix
                 message("Fetching inverse matrix from cache")
+                
+                # Return the values of the inverse matrix
                 return(matrix_inverse)
         }
-        
-        # If inverse matrix in the cache is empty, fetch the values of 
-        # the matrix from cache.
-        matrix <- x$get()
-        
-        # Calculate the inverse of the matrix.
-        matrix_inverse <- solve(matrix, ...)
-        
-        # Update the cache with the newsly computed inverse matrix.
-        x$set_inverse(matrix_inverse)
         
         # Return the values of the inverse matrix
         matrix_inverse
